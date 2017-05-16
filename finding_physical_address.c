@@ -20,7 +20,8 @@
 	O programa consiste em acessar o mapeamento de endereço lógico para 
 	físico das páginas de dois processos: pai e filho, e constatar que
 	esses processos tem o mesmo endereço lógico referenciado por um pon-
-	teiro apontando para um endereço físico de um espaço de memória compartilhada.
+	teiro apontando para um mesmo endereço físico de um espaço de memória
+	compartilhada.
 
 	Como já visto anteriormente na disciplina, um processo filho herda
 	todo o espaço de endereçamento do pai, por isso a constatação desse
