@@ -19,9 +19,11 @@
 /*
 	O programa consiste em acessar o mapeamento de endereço lógico para 
 	físico das páginas de dois processos: pai e filho, e constatar que
-	esses processos tem o mesmo endereço lógico referenciado por um pon-
-	teiro apontando para um mesmo endereço físico de um espaço de memória
-	compartilhada.
+	esses processos tem o mesmo endereço lógico de uma variável que é
+	mapeado para dois endereços físicos diferentes. A segunda hipótese
+	é a de que há o mesmo endereço lógico nos processos pai e filho
+	referenciado por um ponteiro apontando para um mesmo endereço físico
+	de um espaço de memória compartilhada. 
 
 	Como já visto anteriormente na disciplina, um processo filho herda
 	todo o espaço de endereçamento do pai, por isso a constatação desse
@@ -143,6 +145,7 @@ int main(){
 
 	int shm_fd;
 	char *ptr;
+	int teste_end_logico;
 	const int SIZE = 4096;
 	const char *name = "shared_memory";
 
@@ -176,30 +179,38 @@ int main(){
 	*/
 	unsigned int frame_offset = (unsigned long)ptr % getpagesize();
 
+	printf("\n\nHipóteses a serem testadas:\n");
+	printf("1) Endereços lógicos iguais em pai e filho -> físicos diferentes\n");
+	printf("2) Endereços lógicos iguais em pai e filho -> físicos iguais em um contexto de memória compartilhada\n");
+	printf("-----------------------------------------\n\n");
 	int res = fork () ;//Criando processo filho
 
 	if(res>0){
-		printf("Primeira hipótese - Pai e Filho com mesmo end. lógico -> mesmo end. físico\n");
-		printf("Endereço lógico de memória compartilhada do pai: %p\n\n",ptr);
-		page_frame_number = get_page_frame_number_of_address(ptr);
-		printf("Endereço do quadro referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
+		printf("1) Endereço lógico do pai: %p\n\n",&teste_end_logico);
+		teste_end_logico = 10;
+		page_frame_number = get_page_frame_number_of_address(&teste_end_logico);
+		//printf("Endereço do quadro referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
-		printf("Endereço físico referenciado pelo endereço lógico do pai: 0x%" PRIu64 "\n\n", physical_addr);
+		printf("1) Endereço físico referenciado pelo endereço lógico do pai: 0x%" PRIu64 "\n\n", physical_addr);
+
+		printf("2) Endereço lógico de memória compartilhada do pai: %p\n\n",ptr);
+		page_frame_number = get_page_frame_number_of_address(ptr);
+		//printf("2) Endereço do quadro da memória compartilhada referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
+		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
+		printf("2) Endereço físico referenciado da memória compartilhada pelo endereço lógico do pai: 0x%" PRIu64 "\n\n", physical_addr);
 	}else{
-		sprintf(ptr,"Hello: ");
-		printf("Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
-		page_frame_number = get_page_frame_number_of_address(ptr);
-		printf("Endereço do quadro referenciado pelo endereço lógico do filho: %u\n\n", page_frame_number);
+		printf("1) Endereço lógico do filho: %p\n\n",&teste_end_logico);
+		teste_end_logico = 11;
+		page_frame_number = get_page_frame_number_of_address(&teste_end_logico);
+		//printf("Endereço do quadro referenciado pelo endereço lógico do filho: %u\n\n", page_frame_number);
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
-		printf("Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
+		printf("1) Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
 
 
 		/*
 		   Mapeando o ponteiro novamente para provar a segunda hipótese proposta, de que para um contexto
 		   de memória compartilhada, dois endereços lógico diferentes apontam para o mesmo físico. 
 		*/
-		printf("--------------------------------------------------------------\n");
-		printf("Segunda hipótese - dois lógicos diferentes -> mesmo físico:\n");
 		ptr = mmap(0,SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
 		if (ptr == MAP_FAILED) {
 			printf("Map failed\n");
@@ -209,10 +220,10 @@ int main(){
 		sprintf(ptr,"Hello: ");
 
 		/* Testando a segunda hipótese */
-		printf("Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
+		printf("2) Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
 		page_frame_number = get_page_frame_number_of_address(ptr);
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
-		printf("Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
+		printf("2) Endereço físico da memória compartilhada referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
 	}
 
 
