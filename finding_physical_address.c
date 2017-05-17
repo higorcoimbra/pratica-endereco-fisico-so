@@ -179,6 +179,7 @@ int main(){
 	int res = fork () ;//Criando processo filho
 
 	if(res>0){
+		printf("Primeira hipótese - Pai e Filho com mesmo end. lógico -> mesmo end. físico\n");
 		printf("Endereço lógico de memória compartilhada do pai: %p\n\n",ptr);
 		page_frame_number = get_page_frame_number_of_address(ptr);
 		printf("Endereço do quadro referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
@@ -189,6 +190,27 @@ int main(){
 		printf("Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
 		page_frame_number = get_page_frame_number_of_address(ptr);
 		printf("Endereço do quadro referenciado pelo endereço lógico do filho: %u\n\n", page_frame_number);
+		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
+		printf("Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
+
+
+		/*
+		   Mapeando o ponteiro novamente para provar a segunda hipótese proposta, de que para um contexto
+		   de memória compartilhada, dois endereços lógico diferentes apontam para o mesmo físico. 
+		*/
+		printf("--------------------------------------------------------------\n");
+		printf("Segunda hipótese - dois lógicos diferentes -> mesmo físico:\n");
+		ptr = mmap(0,SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+		if (ptr == MAP_FAILED) {
+			printf("Map failed\n");
+			return -1;
+		}
+
+		sprintf(ptr,"Hello: ");
+
+		/* Testando a segunda hipótese */
+		printf("Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
+		page_frame_number = get_page_frame_number_of_address(ptr);
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
 		printf("Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
 	}
