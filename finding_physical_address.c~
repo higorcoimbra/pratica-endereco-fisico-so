@@ -191,7 +191,6 @@ int main(){
 		teste_end_logico = 10;
 		page_frame_number = get_page_frame_number_of_address(&teste_end_logico);
 		//printf("Endereço do quadro referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
-		frame_offset = (unsigned long)&teste_end_logico % getpagesize();
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
 		printf("1) Endereço físico referenciado pelo endereço lógico do pai: 0x%" PRIu64 "\n\n", physical_addr);
 
@@ -206,7 +205,6 @@ int main(){
 		teste_end_logico = 11;
 		page_frame_number = get_page_frame_number_of_address(&teste_end_logico);
 		//printf("Endereço do quadro referenciado pelo endereço lógico do filho: %u\n\n", page_frame_number);
-		frame_offset = (unsigned long)&teste_end_logico % getpagesize();
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
 		printf("1) Endereço físico referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
 
@@ -226,7 +224,6 @@ int main(){
 		/* Testando a segunda hipótese */
 		printf("2) Endereço lógico de memória compartilhada do filho: %p\n\n",ptr);
 		page_frame_number = get_page_frame_number_of_address(ptr);
-		frame_offset = (unsigned long)ptr % getpagesize();
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
 		printf("2) Endereço físico da memória compartilhada referenciado pelo endereço lógico do filho: 0x%" PRIu64 "\n\n", physical_addr);
 	}
