@@ -21,9 +21,15 @@
 	físico das páginas de dois processos: pai e filho, e constatar que
 	esses processos tem o mesmo endereço lógico de uma variável que é
 	mapeado para dois endereços físicos diferentes. A segunda hipótese
+<<<<<<< HEAD
 	é a de que com endereços lógicos diferentes nos processos pai e filho
 	é possíveo referenciar um mesmo endereço físico de um espaço de memória
 	compartilhada. 
+=======
+	é a de que há o mesmo endereço lógico nos processos pai e filho
+	referenciado por um ponteiro apontando para um mesmo endereço físico
+	de um espaço de memória compartilhada. 
+>>>>>>> 9990e69d46703c94daa9ded1022b0ab775409901
 
 	Como já visto anteriormente na disciplina, um processo filho herda
 	todo o espaço de endereçamento do pai, por isso a constatação desse
@@ -113,7 +119,11 @@ unsigned long get_page_frame_number_of_address(void *addr) {
    }
 
 
+<<<<<<< HEAD
    unsigned long page_frame_number = 0;//tamanho de 8 bytes
+=======
+   unsigned long page_frame_number = 0;
+>>>>>>> 9990e69d46703c94daa9ded1022b0ab775409901
    /*
    	O número do quadro de página está nos primeiros 55 bits, como descrito anteriormente.
    	Logo lemos 7 bytes = 56 bits e tiramos do resultado o último bit.
@@ -146,6 +156,10 @@ int main(){
 	int shm_fd;
 	char *ptr;
 	int teste_end_logico;
+<<<<<<< HEAD
+=======
+	unsigned int frame_offset;
+>>>>>>> 9990e69d46703c94daa9ded1022b0ab775409901
 	const int SIZE = 4096;
 	const char *name = "shared_memory";
 
@@ -177,7 +191,11 @@ int main(){
 		em 4098%4096 = 2. Ou seja o deslocamento de 2 bytes quando utilizado no quadro resulta
 		no acesso a variável de endereço 4098 da memória virtual.
 	*/
+<<<<<<< HEAD
 	unsigned int frame_offset = (unsigned long)ptr % getpagesize();
+=======
+	
+>>>>>>> 9990e69d46703c94daa9ded1022b0ab775409901
 
 	printf("\n\nHipóteses a serem testadas:\n");
 	printf("1) Endereços lógicos iguais em pai e filho -> físicos diferentes\n");
@@ -196,6 +214,10 @@ int main(){
 		printf("2) Endereço lógico de memória compartilhada do pai: %p\n\n",ptr);
 		page_frame_number = get_page_frame_number_of_address(ptr);
 		//printf("2) Endereço do quadro da memória compartilhada referenciado pelo endereço lógico do pai: %u\n\n", page_frame_number);
+<<<<<<< HEAD
+=======
+		frame_offset = (unsigned long)ptr % getpagesize();
+>>>>>>> 9990e69d46703c94daa9ded1022b0ab775409901
 		physical_addr = (page_frame_number << PAGE_SHIFT) + frame_offset;	
 		printf("2) Endereço físico referenciado da memória compartilhada pelo endereço lógico do pai: 0x%" PRIu64 "\n\n", physical_addr);
 	}else{
